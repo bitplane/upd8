@@ -12,13 +12,12 @@ class ExceptionTest(Versioned):
 
     @changes
     def raise_abort(self):
-        raise AbortChange()
-        return "Shouldn't reach here"
+        raise AbortChange("Return this")
 
     @changes
     def conditional_abort(self, condition):
         if condition:
-            raise AbortChange()
+            raise AbortChange("Aborted")
         return "No abort"
 
 
@@ -38,9 +37,9 @@ def test_abort_in_changes_method():
     obj = ExceptionTest()
     initial_version = obj.version
 
-    # Should not raise, but should return None
+    # Should return the raised value
     result = obj.raise_abort()
-    assert result is None
+    assert result == "Return this"
 
     # Version should not have been incremented
     assert obj.version == initial_version
@@ -53,18 +52,16 @@ def test_conditional_abort():
 
     # Should abort but not raise exception, and not increment version
     result = obj.conditional_abort(True)
-    assert result is None
+    assert result == "Aborted"
     assert obj.version == initial_version
 
     # Should not abort and should increment version
     result = obj.conditional_abort(False)
     assert result == "No abort"
-    assert (
-        obj.version == initial_version + 1
-    )  # Version incremented for successful execution
+    assert obj.version == initial_version + 1
 
 
-def test_abort_suppression_in_context_manager():
+def test_abort_caught_in_context_manager():
     """Test that AbortChange is suppressed when raised within a context manager"""
     obj = ExceptionTest()
     initial_version = obj.version

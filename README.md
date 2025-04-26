@@ -72,19 +72,23 @@ You can use `async with Versioned.change` from within asynchronous code.
 
 If you're not using automatic updating fields, you can add thread safety to
 Versioned objects by decorating method with `@waits`, and avoid the context
-manager indenting your code with the `@changes`. These work on `async` methods
-too.
+manager indenting your code with the `@changes`.
+
+These work on `async` methods too.
 
 ```python
 class World(Versioned):
-    _population = 8_000_000_000
+    _population: int = 8_000_000_000
 
     @changes
-    def bottleneck(self, amount):
-        pop = int(self._population * amount)
-        if pop == self._population:
+    def bottleneck(self, amount: float) -> int:
+        survivors = int(self._population * amount)
+        if survivors <= 0 or survivors == self._population:
+
+            # set the return value in the AbortChange exception
             raise AbortChange(self._population)
-        self._population = pop
+
+        self._population = survivors
         return self._population
 
     @waits
@@ -93,7 +97,14 @@ class World(Versioned):
         return self._population
 ```
 
-## License
+## 🔗 links
+
+* [🏠 home](https://bitplane.net/dev/python/upd8)
+* [📖 pydoc](https://bitplane.net/dev/python/upd8/pydoc)
+* [🐍 pypi](https://pypi.org/project/upd8)
+* [🐱 github](https://github.com/bitplane/upd8)
+
+## ⚖️ License
 
 Licensed under the WTFPL with one additional clause:
 

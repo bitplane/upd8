@@ -23,8 +23,10 @@ def changes(method):
     def sync_wrapper(self: Versioned, *args, **kwargs):
         # For synchronous methods
         try:
-            with self.change:
-                return method(self, *args, **kwargs)
+            with self._Versioned__lock:
+                result = method(self, *args, **kwargs)
+                self.change()
+                return result
         except AbortChange as abort:
             return abort.return_value
 
@@ -32,8 +34,10 @@ def changes(method):
     async def async_wrapper(self: Versioned, *args, **kwargs):
         # For asynchronous methods
         try:
-            async with self.change:
-                return await method(self, *args, **kwargs)
+            with self._Versioned__lock:
+                result = await method(self, *args, **kwargs)
+                self.change()
+                return result
         except AbortChange as abort:
             return abort.return_value
 
