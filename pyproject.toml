@@ -17,6 +17,7 @@ dev = [
     "pytest",
     "coverage",
     "pytest-cov",
+    "pytest-asyncio",
     "build",
     "twine"
 ]
