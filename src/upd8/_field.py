@@ -30,7 +30,6 @@ class field(Generic[T]):
         if obj is None:
             return self
 
-        # Access the mangled lock attribute - always use "Versioned" as the class name
         lock = getattr(obj, "_Versioned__lock")
         with lock:
             # Initialize if not already set
@@ -40,7 +39,6 @@ class field(Generic[T]):
             return getattr(obj, self.private_name)
 
     def __set__(self, obj, value: T) -> None:
-        # Access the mangled lock attribute - always use "Versioned" as the class name
         lock = getattr(obj, "_Versioned__lock")
         with lock:
             # Only increment version if value changed

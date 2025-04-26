@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from upd8 import AbortUpdate, Versioned, changes, field, waits
+from upd8 import AbortChange, Versioned, changes, field, waits
 
 
 class AsyncTest(Versioned):
@@ -30,7 +30,7 @@ class AsyncTest(Versioned):
     async def abort_if_negative(self, value):
         await asyncio.sleep(0.01)
         if value < 0:
-            raise AbortUpdate()
+            raise AbortChange()
         self.value = value
         return self.value
 
@@ -79,11 +79,11 @@ async def test_async_context_manager():
 
 @pytest.mark.asyncio
 async def test_async_abort_update():
-    """Test that AbortUpdate works with async methods"""
+    """Test that AbortChange works with async methods"""
     obj = AsyncTest()
     initial_version = obj.version
 
-    # AbortUpdate should be caught and result should be None
+    # AbortChange should be caught and result should be None
     result = await obj.abort_if_negative(-5)
     assert result is None
     assert obj.version == initial_version  # Version unchanged
@@ -96,15 +96,15 @@ async def test_async_abort_update():
 
 @pytest.mark.asyncio
 async def test_async_abort_in_context():
-    """Test AbortUpdate in async context manager"""
+    """Test AbortChange in async context manager"""
     obj = AsyncTest()
     initial_version = obj.version
 
-    # AbortUpdate should be suppressed by context manager
+    # AbortChange should be suppressed by context manager
     async with obj.change:
         obj.value = 5
         await asyncio.sleep(0.01)
-        raise AbortUpdate()
+        raise AbortChange()
 
     assert obj.version == initial_version + 1
     assert obj.value == 5  # Value was changed

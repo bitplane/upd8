@@ -5,7 +5,7 @@ Decorators for Versioned objects.
 import inspect
 from functools import wraps
 
-from upd8._exception import AbortUpdate
+from upd8._exception import AbortChange
 from upd8._versioned import Versioned
 
 
@@ -15,8 +15,8 @@ def changes(method):
     Works with both synchronous and asynchronous methods.
     Automatically uses the change context manager.
 
-    If a method raises AbortUpdate, the exception is caught and the method
-    returns None without incrementing the version.
+    If a method raises AbortChange, the exception is caught and the method
+    returns the return value passed to the exception.
     """
 
     @wraps(method)
@@ -25,8 +25,8 @@ def changes(method):
         try:
             with self.change:
                 return method(self, *args, **kwargs)
-        except AbortUpdate:
-            return None  # Suppress AbortUpdate exception
+        except AbortChange as abort:
+            return abort.return_value
 
     @wraps(method)
     async def async_wrapper(self: Versioned, *args, **kwargs):
@@ -34,8 +34,8 @@ def changes(method):
         try:
             async with self.change:
                 return await method(self, *args, **kwargs)
-        except AbortUpdate:
-            return None  # Suppress AbortUpdate exception
+        except AbortChange as abort:
+            return abort.return_value
 
     # Check if the method is asynchronous and return the appropriate wrapper
     if inspect.iscoroutinefunction(method):
@@ -54,16 +54,14 @@ def waits(method):
     @wraps(method)
     def sync_wrapper(self: Versioned, *args, **kwargs):
         # For synchronous methods
-        lock = getattr(self, "_Versioned__lock")
-        with lock:
+        with self._Versioned__lock:
             result = method(self, *args, **kwargs)
         return result
 
     @wraps(method)
     async def async_wrapper(self: Versioned, *args, **kwargs):
         # For asynchronous methods
-        lock = getattr(self, "_Versioned__lock")
-        with lock:
+        with self._Versioned__lock:
             result = await method(self, *args, **kwargs)
         return result
 

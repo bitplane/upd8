@@ -1,40 +1,40 @@
 """
-Tests for the AbortUpdate exception.
+Tests for the AbortChange exception.
 """
 
 import pytest
 
-from upd8 import AbortUpdate, Versioned, changes
+from upd8 import AbortChange, Versioned, changes
 
 
 class ExceptionTest(Versioned):
-    """Test class for AbortUpdate exception"""
+    """Test class for AbortChange exception"""
 
     @changes
     def raise_abort(self):
-        raise AbortUpdate()
+        raise AbortChange()
         return "Shouldn't reach here"
 
     @changes
     def conditional_abort(self, condition):
         if condition:
-            raise AbortUpdate()
+            raise AbortChange()
         return "No abort"
 
 
 def test_abort_update_is_exception():
-    """Test that AbortUpdate is a proper exception"""
-    assert issubclass(AbortUpdate, Exception)
+    """Test that AbortChange is a proper exception"""
+    assert issubclass(AbortChange, Exception)
 
 
 def test_abort_update_can_be_raised():
-    """Test that AbortUpdate can be raised and caught"""
-    with pytest.raises(AbortUpdate):
-        raise AbortUpdate()
+    """Test that AbortChange can be raised and caught"""
+    with pytest.raises(AbortChange):
+        raise AbortChange()
 
 
 def test_abort_in_changes_method():
-    """Test that AbortUpdate in a @changes method is suppressed and prevents version increment"""
+    """Test that AbortChange in a @changes method is suppressed and prevents version increment"""
     obj = ExceptionTest()
     initial_version = obj.version
 
@@ -65,13 +65,13 @@ def test_conditional_abort():
 
 
 def test_abort_suppression_in_context_manager():
-    """Test that AbortUpdate is suppressed when raised within a context manager"""
+    """Test that AbortChange is suppressed when raised within a context manager"""
     obj = ExceptionTest()
     initial_version = obj.version
 
-    # Context manager should suppress AbortUpdate exception
+    # Context manager should suppress AbortChange exception
     with obj.change:
-        raise AbortUpdate()  # This should be caught by the context manager
+        raise AbortChange()  # This should be caught by the context manager
 
     # Should reach here without exception
     # Version should not increment

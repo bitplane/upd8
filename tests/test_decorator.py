@@ -2,7 +2,7 @@
 Tests for the decorators.
 """
 
-from upd8 import AbortUpdate, Versioned, changes, field, waits
+from upd8 import AbortChange, Versioned, changes, field, waits
 
 
 class DecoratorTest(Versioned):
@@ -22,7 +22,7 @@ class DecoratorTest(Versioned):
     @changes
     def abort_if_negative(self, value):
         if value < 0:
-            raise AbortUpdate()
+            raise AbortChange()
         self.value = value
         return True
 
@@ -52,7 +52,7 @@ def test_waits_decorator():
 
 
 def test_changes_abort_update():
-    """Test that AbortUpdate in @changes method is properly handled"""
+    """Test that AbortChange in @changes method is properly handled"""
     obj = DecoratorTest()
     old_version = obj.version
     old_value = obj.value

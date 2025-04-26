@@ -3,10 +3,14 @@ Exception classes for the upd8 package.
 """
 
 
-class AbortUpdate(Exception):
+class AbortChange(Exception):
     """
-    Raise this exception if you want to exit a @changes decorated method
+    Raise this exception to exit a @changes decorated method
     without incrementing the version.
+
+    Can optionally include a return value.
     """
 
-    pass
+    def __init__(self, return_value=None):
+        self.return_value = return_value
+        super().__init__()

@@ -2,7 +2,7 @@
 Tests for the Versioned base class.
 """
 
-from upd8 import AbortUpdate, Versioned, field
+from upd8 import AbortChange, Versioned, field
 
 
 class SimpleVersioned(Versioned):
@@ -64,21 +64,34 @@ def test_hash():
     assert hash1 != hash2
 
 
-def test_equality():
-    """Test equality based on identity and version"""
+def test_inequality():
+    """Test inequality based on identity and version"""
     obj1 = SimpleVersioned()
     obj2 = SimpleVersioned()
 
     # Different objects should not be equal
     assert obj1 != obj2
 
-    # Same object should be equal to itself
-    obj3 = obj1
-    assert obj1 == obj3
+
+def test_inequality_by_type():
+    """Test equality based on identity and version"""
+    obj1 = SimpleVersioned()
+    obj2 = object()
+
+    # Different objects should not be equal
+    assert obj1 != obj2
+
+
+def test_equality():
+    """Test equality based on identity and version"""
+    obj1 = SimpleVersioned()
+    obj2 = obj1
+
+    assert obj1 == obj2
 
 
 def test_abort_in_context():
-    """Test that AbortUpdate in a context doesn't increment version"""
+    """Test that AbortChange in a context doesn't increment version"""
     obj = SimpleVersioned()
     old_version = obj.version
 
@@ -89,9 +102,9 @@ def test_abort_in_context():
     assert obj.version == old_version + 1
     current_version = obj.version
 
-    # Now test with AbortUpdate
+    # Now test with abort
     with obj.change:
-        raise AbortUpdate()  # Should be suppressed
+        raise AbortChange()  # Should be suppressed
 
     # The version shouldn't change from the previous value
     assert obj.version == current_version
