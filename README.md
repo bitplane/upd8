@@ -14,9 +14,9 @@ or
 uv pip install upd8
 ```
 
-## ▶️ Usage
+## 💡 Usage
 
-### Simple updates
+### 🔝 Simple updates
 
 ```python
 >>> import upd8
@@ -29,7 +29,7 @@ uv pip install upd8
 2
 ```
 
-### Automatic versioning
+### 🍗 Automatic versioning
 
 Fields will update the version when you change them.
 
@@ -49,7 +49,7 @@ class Doggo(Versioned):
 2
 ```
 
-### Manual updates
+### 🌭 Manual updates
 
 `change` can be used as a context manager, and changes can be aborted by
 raising `AbortChange`:
@@ -57,7 +57,7 @@ raising `AbortChange`:
 ```python
 >>> from upd8 import
 >>> d = Doggo()
->>> d.legs = 1
+>>> d.legs = 0
 >>> with d.change:
         if not d.legs:
             raise AbortChange()
@@ -68,7 +68,7 @@ raising `AbortChange`:
 
 You can use `async with Versioned.change` from within asynchronous code.
 
-### Thread safety
+### 🧵 Thread safety
 
 If you're not using automatic updating fields, you can add thread safety to
 Versioned objects by decorating method with `@waits`, and avoid the context
