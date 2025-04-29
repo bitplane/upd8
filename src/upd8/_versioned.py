@@ -56,7 +56,7 @@ class Versioned:
         # Access the mangled lock attribute - always use "Versioned" as the class name
         # because that's where __lock is defined
         first_lock = self._Versioned__lock
-        second_lock = self._Versioned__lock
+        second_lock = second._Versioned__lock
 
         with first_lock:
             with second_lock:
