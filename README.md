@@ -55,7 +55,6 @@ class Doggo(Versioned):
 raising `AbortChange`:
 
 ```python
->>> from upd8 import
 >>> d = Doggo()
 >>> d.legs = 0
 >>> with d.change:
